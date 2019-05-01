@@ -5,7 +5,7 @@ This tool creates IOTA transactions, compresses them using the fast compression 
 1. If you haven't already install Rust using `rustup`, Rust's toolchain manager. You can download it [here](https://www.rust-lang.org/tools/install).
 2. Clone this repository, cd into it, and build the project using `cargo build --release`.
 
-# How to run the it
+# How to run it
 Open two terminals and change into the *release* directory respectively. Then in one terminal start the receiver and in the other terminal start the sender by typing:
 ```Bash
    ./iota_lz4_udp receiver 

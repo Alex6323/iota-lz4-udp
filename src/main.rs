@@ -9,9 +9,9 @@ mod sender;
 mod time;
 
 //=====================================================
-// YOU CAN PLAY WITH THOSE VALUES TO SIMULATE DIFFERENT
-// MORE OR LESS REDUNDANT DATA AND TO SEE EFFECTS ON
-// TIMINGS WHEN CHANGING THE ENCODER LEVEL.
+// YOU CAN PLAY WITH THOSE VALUES
+// * try increasing the encoder level
+// * try to change the message length
 //=====================================================
 pub const ENCODER_LEVEL: u32 = 0;
 pub const MESSAGE_LENGTH: usize = 1000; //1458 = max number of bytes for signature/message fragment
@@ -38,5 +38,4 @@ fn main() {
             app_name
         ),
     }
-    println!("Hello, world!");
 }
