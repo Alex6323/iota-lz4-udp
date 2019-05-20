@@ -6,12 +6,22 @@ This tool creates IOTA transactions, compresses them using the fast compression 
 2. Clone this repository, cd into it, and build the project using `cargo build --release`.
 
 # How to run it
-Open two terminals and change into the *release* directory respectively. Then in one terminal start the receiver and in the other terminal start the sender by typing:
+Open two terminals and change into the *release* directory respectively. Currently the following compression algorithms are supported:
+* Lz4
+* TrimFrag (trims the empty space in the signature message fragment)
+
+Running two endpoints sending lz4 compressed IOTA transactions can be as simple as typing: 
 ```Bash
-   ./iota_lz4_udp receiver 
-   ./iota_lz4_udp sender 
+./itxc recv lz4 
 ```
-Per default this tool uses the ports `1337` for the sender and `1338` for the receiver. Change those in `main.rs` if you get error messages saying the port is already in use. Play with the constants in `main.rs` to see the effects when changing the compression level or when changing the payload inside of the signature/message fragment.
+in one terminal, and 
+```Bash
+./itxc send lz4
+```
+in the other terminal. You can however, customize your test by adjusting the ports, changing the compression level for lz4, and choose a different payload size. If you want to see all options of a subcommand simply type:
+```Bash
+./itxc [SUBCOMMAND] --help
+```
 
 # Contact 
 Feel free to contact me on the IOTA Discord server. My handle is /alex/#6323. Have fun :)
