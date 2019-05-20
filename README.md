@@ -1,5 +1,5 @@
 # About
-This tool creates IOTA transactions, compresses them using the fast compression algorithm [lz4](https://en.wikipedia.org/wiki/LZ4_(compression_algorithm)) and then sends them via UDP to a receiver which decompresses and decodes them. Both ends measure and print the timings for compressing/decompressing the transactions. 
+This tool creates IOTA transactions as specified by the Ict protocol, compresses them using one of several available compression algorithms, e.g. [lz4](https://en.wikipedia.org/wiki/LZ4_(compression_algorithm)) and then sends them via UDP to a receiving endpoint which then decompresses and deserializes them. Both endpoints measure timings for each compression/decompression and print that information to the terminal.
 
 # How to build it
 1. If you haven't already install Rust using `rustup`, Rust's toolchain manager. You can download it [here](https://www.rust-lang.org/tools/install).
