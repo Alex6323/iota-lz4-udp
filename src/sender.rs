@@ -1,28 +1,28 @@
 use rand::distributions::Alphanumeric;
 use rand::{thread_rng, Rng};
 
-//use std::io::Write;
 use std::iter;
 use std::net::UdpSocket;
 use std::thread;
 use std::time::{Duration, Instant};
 
+use crate::algos::CompressionAlgo;
+use crate::constants::MIN_MESSAGE_LENGTH;
 use crate::model::transaction::*;
-use crate::types::CompressionAlgo;
 
 // MODIFY THIS VALUE TO CHANGE PAUSE BETWEEN SENDS
 const SLEEP_MS: u64 = 3000;
 
 pub fn start(send_port: u16, recv_port: u16, msg_length: usize, algo: Box<dyn CompressionAlgo>) {
-    let send_addr = &format!("127.0.0.1:{}", send_port);
+    //
     let recv_addr = &format!("127.0.0.1:{}", recv_port);
 
-    // Create UDP socket
+    // Create a UDP socket
+    let send_addr = &format!("127.0.0.1:{}", send_port);
     let socket = UdpSocket::bind(send_addr).expect("Couldn't bind to sender address");
-
-    // Create an RNG
     let mut rng = thread_rng();
 
+    // Send compressed UDP packets and print events to terminal
     loop {
         // Create a random message from alphanumberic chars
         let msg: String = iter::repeat(())
@@ -49,10 +49,12 @@ pub fn start(send_port: u16, recv_port: u16, msg_length: usize, algo: Box<dyn Co
             .expect("Couldn't send packet to receiver");
 
         println!(
-            "Sent ascii msg/tx: {}...({:.2}) Compressed in {} ns",
-            &msg[..10],
+            "Sent {} bytes ({}) - Compressed {} bytes in {} ns ({:.2}).",
+            compressed.len(),
+            &msg[..MIN_MESSAGE_LENGTH],
+            tx_bytes.len(),
+            stop.subsec_nanos(),
             tx_bytes.len() as f64 / compressed.len() as f64,
-            stop.subsec_nanos()
         );
 
         sleep(SLEEP_MS);

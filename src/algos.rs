@@ -109,8 +109,7 @@ mod tests {
     #[test]
     fn trim_frag_compression_works() {
         let trim_frag = TrimFrag;
-        //let tx = TransactionBuilder::default().message("Hello").build();
-        let tx = TransactionBuilder::default().message("y3s7bxyrwS").build();
+        let tx = TransactionBuilder::default().message("Hello").build();
         let bytes = tx.as_bytes();
 
         let compressed = trim_frag

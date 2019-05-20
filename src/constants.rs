@@ -23,14 +23,13 @@ pub const TRANSACTION_SIZE_TRYTES: usize = TRANSACTION_SIZE_TRITS / 3; // =2673
 pub const TRANSACTION_SIZE_BYTES: usize = TRANSACTION_SIZE_TRITS / 9 * 2; // =1782
 pub const PACKET_SIZE: usize = TRANSACTION_SIZE_BYTES;
 
-pub const REQUEST_HASH: Field = (8019, 243, 2673, 81, 1782, 54);
-pub const PACKET_SIZE_WITH_REQUEST: usize = 1836;
+pub const MIN_MESSAGE_LENGTH: usize = 10;
+pub const MAX_MESSAGE_LENGTH: usize = 1458;
 
 lazy_static! {
     pub static ref IS_TRYTES: Regex = Regex::new("^[9A-Z]*$").unwrap();
 }
 
-pub const HASH_LENGTH_TRITS: usize = 243;
 pub const CURL_ROUNDS_TRANSACTION_HASH: usize = 27;
 pub const MAX_TOKEN_SUPPLY: i64 = (3 ^ 33) / 2 - 1;
 
