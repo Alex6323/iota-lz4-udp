@@ -1,28 +1,28 @@
-use lz4::{Encoder, EncoderBuilder};
 use rand::distributions::Alphanumeric;
 use rand::{thread_rng, Rng};
 
-use std::io::Write;
+//use std::io::Write;
 use std::iter;
 use std::net::UdpSocket;
 use std::thread;
 use std::time::{Duration, Instant};
 
-use crate::constants::*;
 use crate::model::transaction::*;
+use crate::types::CompressionAlgo;
 
 // MODIFY THIS VALUE TO CHANGE PAUSE BETWEEN SENDS
 const SLEEP_MS: u64 = 3000;
 
-pub fn start(send_port: u16, recv_port: u16, msg_length: usize, enc_level: u32) {
+pub fn start(send_port: u16, recv_port: u16, msg_length: usize, algo: Box<dyn CompressionAlgo>) {
     let send_addr = &format!("127.0.0.1:{}", send_port);
     let recv_addr = &format!("127.0.0.1:{}", recv_port);
 
-    // create UDP socket
+    // Create UDP socket
     let socket = UdpSocket::bind(send_addr).expect("Couldn't bind to sender address");
+
+    // Create an RNG
     let mut rng = thread_rng();
 
-    // create transactions
     loop {
         // Create a random message from alphanumberic chars
         let msg: String = iter::repeat(())
@@ -33,35 +33,27 @@ pub fn start(send_port: u16, recv_port: u16, msg_length: usize, enc_level: u32) 
         // Create a transaction from that message
         let tx = Transaction::default().message(&msg);
 
-        // convert it to bytes
+        // Convert it to bytes
         let tx_bytes = tx.as_bytes();
 
-        let mut encoder = EncoderBuilder::new()
-            .level(enc_level)
-            .build(Vec::new())
-            .expect("couldn't create lz4 encoder");
-
+        // Compress bytes
         let start = Instant::now();
-        // compress it using lz4
-        encoder
-            //.write(&tx_bytes)
-            .write_all(&tx_bytes)
-            .expect("couldn't compress transaction");
-
-        let (buf, result) = encoder.finish();
+        let compressed = algo
+            .compress(&tx_bytes[..])
+            .expect("error compressing transaction");
         let stop = start.elapsed();
 
+        // Send it to the receiver
+        socket
+            .send_to(&compressed, recv_addr)
+            .expect("Couldn't send packet to receiver");
+
         println!(
-            "Sent ascii msg/tx: {}... Compressed in {} ns",
+            "Sent ascii msg/tx: {}...({:.2}) Compressed in {} ns",
             &msg[..10],
+            tx_bytes.len() as f64 / compressed.len() as f64,
             stop.subsec_nanos()
         );
-        result.unwrap();
-
-        // send it to the receiver
-        socket
-            .send_to(&buf, recv_addr)
-            .expect("Couldn't send packet to receiver");
 
         sleep(SLEEP_MS);
     }

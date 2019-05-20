@@ -26,7 +26,9 @@ pub fn from_tryte_string(tryte_string: &str) -> String {
         ascii_chars.remove(ascii_chars.len() - 1);
     }
 
-    String::from_utf8(ascii_chars).unwrap()
+    // NOTE: make sure that ASCIIs are always valid
+    String::from_utf8(ascii_chars).expect("couldn't create utf8 string")
+    //String::from_utf8_lossy(&ascii_chars[..]).to_string()
 }
 
 #[cfg(test)]

@@ -111,44 +111,4 @@ mod tests {
         let trytes = "HELLO9WORLD";
         //let trits = trits_from_trytes(trytes);
     }
-
-    /// Converts bytes representing trit quintuplets to its corresponding trit representation.
-    /// Ported from Cfb's Java version. Just for testing purposes.
-    fn from_tx_bytes_cfb(bytes: &[u8]) -> [i8; TRANSACTION_SIZE_TRITS] {
-        // NOTE: we need to convert &[u8] to &[i8] for the following code to work
-        let bytes = &bytes.iter().map(|u| *u as i8).collect::<Vec<i8>>()[0..bytes.len()];
-
-        let mut result = [0_i8; TRANSACTION_SIZE_TRITS];
-        let mut offset = 0_usize;
-        let mut index: usize;
-        let mut count: usize;
-
-        for i in 0..bytes.len() {
-            if offset >= TRANSACTION_SIZE_TRITS {
-                break;
-            }
-
-            index = if bytes[i] < 0 {
-                (bytes[i] as i32 + 243) as usize
-            } else {
-                bytes[i] as usize
-            };
-            count = if (TRANSACTION_SIZE_TRITS - offset) < 5 {
-                TRANSACTION_SIZE_TRITS - offset
-            } else {
-                5
-            };
-
-            result[offset..offset + count].copy_from_slice(&BYTE_TO_TRITS[index][0..count]);
-            offset += 5;
-        }
-
-        // unnecessary
-        while offset < result.len() {
-            result[offset] = 0;
-            offset += 1;
-        }
-
-        result
-    }
 }
