@@ -3,7 +3,6 @@ use structopt::StructOpt;
 mod algos;
 mod constants;
 mod convert;
-mod crypto;
 mod model;
 mod receiver;
 mod sender;
@@ -34,7 +33,7 @@ enum EndpointMode {
         recv_port: u16,
 
         /// Size of the payload stored in the signature message fragment.
-        #[structopt(short, default_value = "280")]
+        #[structopt(short, default_value = "1458")]
         payload_size: usize,
 
         /// The compression algorithm.
@@ -66,6 +65,9 @@ enum Algo {
 
     #[structopt(name = "trimfrag", about = "Use Trim-Frag compression algorithm.")]
     TrimFrag,
+
+    #[structopt(name = "trimall", about = "Use Trim-All compression algorithm.")]
+    TrimAll,
 }
 
 fn main() {
@@ -78,7 +80,8 @@ fn main() {
             //
             let algo: Box<dyn CompressionAlgo> = match algo {
                 Algo::Lz4 { compression_level } => Box::new(Lz4::new(compression_level)),
-                Algo::TrimFrag => Box::new(TrimFrag),
+                Algo::TrimFrag => Box::new(TrimFragment),
+                Algo::TrimAll => Box::new(TrimAll::new()),
             };
 
             crate::receiver::start(recv_port, algo);
@@ -92,7 +95,8 @@ fn main() {
             //
             let algo: Box<dyn CompressionAlgo> = match algo {
                 Algo::Lz4 { compression_level } => Box::new(Lz4::new(compression_level)),
-                Algo::TrimFrag => Box::new(TrimFrag),
+                Algo::TrimFrag => Box::new(TrimFragment),
+                Algo::TrimAll => Box::new(TrimAll::new()),
             };
 
             let payload_size = if payload_size < MIN_MESSAGE_LENGTH {
@@ -106,25 +110,4 @@ fn main() {
             crate::sender::start(send_port, recv_port, payload_size, algo);
         }
     }
-    /*
-    let algo: Box<dyn CompressionAlgo> = match cli.algo {
-        CliSubcommands::Lz4 { encoder_level } => Box::new(Lz4::new(encoder_level)),
-        CliSubcommands::TrimFlag => Box::new(TrimFrag),
-        //CliSubcommands::TrimAll => panic!("Not supported yet"),
-    };
-
-    let message_length = if cli.message_length < MIN_MESSAGE_LENGTH {
-        MIN_MESSAGE_LENGTH
-    } else if cli.message_length > MAX_MESSAGE_LENGTH {
-        MAX_MESSAGE_LENGTH
-    } else {
-        cli.message_length
-    };
-
-    if cli.sender {
-        crate::sender::start(cli.sender_port, cli.receiver_port, message_length, algo);
-    } else {
-        crate::receiver::start(cli.receiver_port, algo);
-    }
-    */
 }

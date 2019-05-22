@@ -4,7 +4,6 @@ use crate::convert::number;
 use crate::convert::trits::{self, *};
 use crate::convert::tryte_string;
 use crate::convert::trytes::{self, *};
-use crate::crypto::curl;
 use crate::time;
 
 pub const MAX_TIME_TRYTE_LENGTH: usize = 9;
@@ -162,12 +161,14 @@ impl Transaction {
         trytes
     }
 
+    /*
     pub fn get_hash(&self) -> Trytes81 {
         trytes::from_trits_fixed81(&curl::curl_tx(
             self.as_trits(),
             CURL_ROUNDS_TRANSACTION_HASH,
         ))
     }
+    */
 
     pub fn message(mut self, message: &str) -> Self {
         assert!(message.len() <= SIGNATURE_FRAGMENTS.3);
@@ -262,10 +263,6 @@ impl TransactionBuilder {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::convert::{tryte_string, trytes};
-    use crate::crypto::curl;
-    use rayon::prelude::*;
-    use std::time::{Duration, Instant};
 
     // first we need to convert mainnet trytes to ict trytes
     // NOTE: length is already 2754 (instead of 2673 on the mainnet)
@@ -283,24 +280,6 @@ mod tests {
         assert_eq!(1_544_207_541_879, tx.attachment_timestamp);
     }
 
-    #[test]
-    fn test_transaction_encoding_decoding() {
-        let orig = Transaction::from_tryte_string(&get_example_trytes());
-        let copy = Transaction::from_tryte_string(&orig.as_tryte_string());
-
-        assert_eq!(orig.address, copy.address);
-        assert_eq!(orig.tag, copy.tag);
-        assert_eq!(orig.value, copy.value);
-        assert_eq!(orig.as_tryte_string(), copy.as_tryte_string());
-
-        let trits = trits::from_tx_trytes(&orig.as_trytes());
-
-        let orig_hash = tryte_string::from_trits_243(&curl::curl_tx(orig.as_trits(), 123));
-        let copy_hash = tryte_string::from_trits_243(&curl::curl_tx(copy.as_trits(), 123));
-
-        assert_eq!(orig_hash, copy_hash);
-    }
-
     fn get_example_trytes() -> String {
         let sig_msg_frag = MAINNET_TRYTES.get(0..2187).unwrap();
         let extra_data_digest = MAINNET_TRYTES.get((2187 + 162)..(2187 + 162 + 81)).unwrap(); //copied bundle hash
@@ -311,45 +290,5 @@ mod tests {
             "{}{}{}{}",
             sig_msg_frag, extra_data_digest, addr_value_tag_timestamps, rest
         )
-    }
-
-    /// This test creates 1000 different transactions and hashes them sequentially with the default
-    /// transaction hashing algorithm (at the time of writing: Curl-27).
-    ///
-    /// Use `cargo test bench_create_1000_transactions_with_hash` --release -- --nocapture
-    /// to get production results.
-    ///
-    /// Last results:
-    ///     ~542 ms (roughly 2000 PoW-less tps)
-    #[test]
-    fn bench_create_1000_transactions_with_hash() {
-        let start = Instant::now();
-        for i in 0..1000 {
-            let hash = Transaction::default().message(&i.to_string()).get_hash();
-        }
-        let stop = start.elapsed();
-
-        println!(
-            "{} ms",
-            stop.as_secs() * 1000 + u64::from(stop.subsec_millis())
-        );
-    }
-
-    /// Same as test before, but parallel using 'rayon'.
-    ///
-    /// Last results:
-    ///     ~203 ms (roughly 5000 PoW-less tps)
-    #[test]
-    fn bench_create_1000_transactions_with_hash_par() {
-        let start = Instant::now();
-        (0..1000_u32).into_par_iter().for_each(|i: u32| {
-            let hash = Transaction::default().message(&i.to_string()).get_hash();
-        });
-        let stop = start.elapsed();
-
-        println!(
-            "{} ms",
-            stop.as_secs() * 1000 + u64::from(stop.subsec_millis())
-        );
     }
 }

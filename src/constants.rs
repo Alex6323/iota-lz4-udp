@@ -18,6 +18,7 @@ pub const ATTACHMENT_TIMESTAMP: Field = (7857, 27, 2619, 9, 1746, 6);
 pub const ATTACHMENT_TIMESTAMP_LOWER_BOUND: Field = (7884, 27, 2628, 9, 1752, 6);
 pub const ATTACHMENT_TIMESTAMP_UPPER_BOUND: Field = (7911, 27, 2637, 9, 1758, 6);
 pub const NONCE: Field = (7938, 81, 2646, 27, 1764, 18);
+
 pub const TRANSACTION_SIZE_TRITS: usize = 8019;
 pub const TRANSACTION_SIZE_TRYTES: usize = TRANSACTION_SIZE_TRITS / 3; // =2673
 pub const TRANSACTION_SIZE_BYTES: usize = TRANSACTION_SIZE_TRITS / 9 * 2; // =1782
@@ -30,7 +31,7 @@ lazy_static! {
     pub static ref IS_TRYTES: Regex = Regex::new("^[9A-Z]*$").unwrap();
 }
 
-pub const CURL_ROUNDS_TRANSACTION_HASH: usize = 27;
+//pub const CURL_ROUNDS_TRANSACTION_HASH: usize = 27;
 pub const MAX_TOKEN_SUPPLY: i64 = (3 ^ 33) / 2 - 1;
 
 #[cfg(test)]
@@ -95,7 +96,7 @@ mod tests {
             NONCE.0,
             ATTACHMENT_TIMESTAMP_UPPER_BOUND.0 + ATTACHMENT_TIMESTAMP_UPPER_BOUND.1
         );
-        assert_eq!(REQUEST_HASH.0, NONCE.0 + NONCE.1);
+        //assert_eq!(REQUEST_HASH.0, NONCE.0 + NONCE.1);
     }
 
     #[test]
@@ -142,7 +143,7 @@ mod tests {
             ATTACHMENT_TIMESTAMP_UPPER_BOUND.2
         );
         assert_eq!(NONCE.0 / 3, NONCE.2);
-        assert_eq!(REQUEST_HASH.0 / 3, REQUEST_HASH.2);
+        //assert_eq!(REQUEST_HASH.0 / 3, REQUEST_HASH.2);
     }
 
     #[test]
@@ -189,6 +190,6 @@ mod tests {
             ATTACHMENT_TIMESTAMP_UPPER_BOUND.4
         );
         assert_eq!(NONCE.2 / 3 * 2, NONCE.4);
-        assert_eq!(REQUEST_HASH.2 / 3 * 2, REQUEST_HASH.4);
+        //assert_eq!(REQUEST_HASH.2 / 3 * 2, REQUEST_HASH.4);
     }
 }

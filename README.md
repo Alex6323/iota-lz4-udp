@@ -7,8 +7,9 @@ This tool creates IOTA transactions as specified by the Ict protocol, compresses
 
 # How to run it
 Open two terminals and change into the *release* directory respectively. Currently the following compression algorithms are supported:
-* Lz4
-* TrimFrag (trims the empty space in the signature message fragment)
+* LZ4 (fast standard compression algorithm)
+* TrimFrag (right-trims zero bytes of the signature message fragment)
+* TrimAll (right-trims zero bytes of each transaction field)
 
 Running two endpoints sending lz4 compressed IOTA transactions can be as simple as typing: 
 ```Bash
